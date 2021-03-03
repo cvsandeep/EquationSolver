@@ -1,5 +1,5 @@
 
-OBJS = main.o gauss_serial.o buneman_serial.o
+OBJS = main.o gauss_serial.o gauss_parllel.o buneman_serial.o
 
 # All Target
 all: eq
@@ -7,7 +7,7 @@ all: eq
 # Tool invocations
 eq: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	cc -o "eq" $(OBJS) $(USER_OBJS) $(LIBS)
+	cc -lpthread -lrt -o "eq" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
