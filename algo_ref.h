@@ -10,6 +10,7 @@ void backSubs();
 
 
 void Buneman_serial();
+void buneman_parllel(int num_threads);
 
 void printMat(double mat[N][N]);
 void printFull(double mat[N][N+1]);

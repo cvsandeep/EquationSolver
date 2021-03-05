@@ -21,7 +21,7 @@ double A[N][N] = {{86.3, 41.8, -80.8, -94.3, -10.3, 73.0, 19.0, -89.6},
                       {-30.8, -26.5, -19, 52.5, -46.3, -65.3, -78, 75.7}
                        }; 
  double B[N]= {50.2, 45.3, 24.9, 48.4, 88.8, 34.2, -15.02, -45.15};
-#else
+#elif (N==3)
 
   double mat[N][N+1] = {{3.0, 2.0,-4.0, 3.0}, 
                        {2.0, 3.0, 3.0, 15.0}, 
@@ -33,17 +33,31 @@ double A[N][N] = {{86.3, 41.8, -80.8, -94.3, -10.3, 73.0, 19.0, -89.6},
                   {-4, -2,8} }; 
  double B[N]= {4, -6, 7}; 
 
+#else
+double mat[N][N+1];
+ double A[N][N];
+ double B[N];
+
 #endif
 
   double X[N]; 
  
 int main(void) 
 { 
-
+// Intialize Array size
+// Timer
 	gaussian_serial(mat);
+ 
+ //Backward Substituion should be parllelized.
+ // MPI solution
   gaussian_parllel(4);
  
- Buneman_serial(A, B);
+ 
+ Buneman_serial(A, B); // LU 
+ 
+ // Parllel Still not working - Sandeep
+ //Backward Substituion should be parllelized
+ // MPI solution 
  buneman_parllel(4);
 
 	return 0; 
