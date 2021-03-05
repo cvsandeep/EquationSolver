@@ -14,13 +14,6 @@
 extern double mat[N][N+1];
 extern double X[N];
 
-
-
-/****** You will replace this routine with your own parallel version *******/
-/* Provided global variables are MAXN, N, mat[][], B[], and X[],
- * defined in the beginning of this code.  X[] is initialized to zeros.
- */
-
 int NumThreads;
  struct thread_param{
    int norm;

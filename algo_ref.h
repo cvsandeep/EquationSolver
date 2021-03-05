@@ -3,11 +3,16 @@
 
 #include "matrix.h"
 
-void gaussian_serial(double mat[N][N+1]);
-int forwardElimn(double mat[N][N+1]); 
-void backSubs(double mat[N][N+1]); 
+void gaussian_serial();
 void gaussian_parllel(int num_threads);
+int forwardElimn(); 
+void backSubs(); 
 
-void Buneman_serial(double mat[N][N], double B[N]);
+
+void Buneman_serial();
+
+void printMat(double mat[N][N]);
+void printFull(double mat[N][N+1]);
+void printSingle(double x[N]);
 
 #endif

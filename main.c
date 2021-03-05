@@ -1,5 +1,7 @@
+#include <stdio.h>
 #include "algo_ref.h"
 
+#if (N==8)
 double mat[N][N+1] = {{86.3, 41.8, -80.8, -94.3, -10.3, 73.0, 19.0, -89.6, 50.2}, 
                       {71.8, -16.2, 89.9, -91.3, -70.4, -30.2, 26.7, 83.8, 45.3}, 
                       {24.5, 41.7, 43.8, -94.3, -12.7, -73.4, -39.1, -31.4, 24.9},
@@ -19,16 +21,55 @@ double A[N][N] = {{86.3, 41.8, -80.8, -94.3, -10.3, 73.0, 19.0, -89.6},
                       {-30.8, -26.5, -19, 52.5, -46.3, -65.3, -78, 75.7}
                        }; 
  double B[N]= {50.2, 45.3, 24.9, 48.4, 88.8, 34.2, -15.02, -45.15};
- 
+#else
+
+  double mat[N][N+1] = {{3.0, 2.0,-4.0, 3.0}, 
+                       {2.0, 3.0, 3.0, 15.0}, 
+						           {5.0,  -3, 1.0, 14.0} }; 
+
+
+ double A[N][N] = {{2, -1,-2}, 
+                  {-4, 6, 3}, 
+                  {-4, -2,8} }; 
+ double B[N]= {4, -6, 7}; 
+
+#endif
+
   double X[N]; 
  
 int main(void) 
 { 
 
-  gaussian_serial(mat);
+	gaussian_serial(mat);
   gaussian_parllel(4);
  
- //Buneman_serial(A, B);
+ Buneman_serial(A, B);
+ buneman_parllel(4);
 
 	return 0; 
+} 
+
+void printFull(double mat[N][N+1]) 
+{ 
+  int i,j;
+	for (i=0; i<N; i++, printf("\n")) 
+		for (j=0; j<=N; j++) 
+			printf("%lf \t ", mat[i][j]); 
+	printf("\n"); 
+} 
+
+void printSingle(double x[N]) {
+int i;
+for (i=0; i<N; i++) 
+		printf("%lf\n", x[i]);
+}
+
+// function to print matrix content at any stage 
+void printMat(double mat[N][N]) 
+{ 
+  int i,j;
+	for (i=0; i<N; i++, printf("\n")) 
+		for (j=0; j<N; j++) 
+			printf("%9.3f ", mat[i][j]); 
+
 } 

@@ -1,15 +1,10 @@
-// program to demonstrate working of Guassian Elimination 
-// method 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "algo_ref.h"
 
-// function to get matrix content 
 void gaussian_serial(double mat[N][N+1]) 
 { 
-	/* reduction into r.e.f. */
 	int singular_flag = forwardElimn(mat); 
 
 	/* if matrix is singular */
@@ -29,36 +24,9 @@ void gaussian_serial(double mat[N][N+1])
 		return; 
 	} 
 
-	/* get solution to system and print it using 
-	backward substitution */
 	backSubs(mat); 
 } 
 
-// function for elementary operation of swapping two rows 
-void swap_row(double mat[N][N+1], int i, int j) 
-{ 
-	//printf("Swapped rows %d and %d\n", i, j); 
-  int k;
-	for (k=0; k<=N; k++) 
-	{ 
-		double temp = mat[i][k]; 
-		mat[i][k] = mat[j][k]; 
-		mat[j][k] = temp; 
-	} 
-} 
-
-// function to print matrix content at any stage 
-void print(double mat[N][N+1]) 
-{ 
-  int i,j;
-	for (i=0; i<N; i++, printf("\n")) 
-		for (j=0; j<=N; j++) 
-			printf("%lf \t ", mat[i][j]); 
-
-	printf("\n"); 
-} 
-
-// function to reduce matrix to r.e.f. 
 int forwardElimn(double mat[N][N+1]) 
 {
   int i,j,k;
@@ -72,8 +40,7 @@ int forwardElimn(double mat[N][N+1])
 
 		for (i=k+1; i<N; i++) 
 		{ 
-			/* subtract fth multiple of corresponding kth 
-			row element*/
+			/* subtract fth multiple of corresponding kth row element*/
 			for (j=k+1; j<=N; j++) {
         mat[k][j] =  mat[k][j]/mat[k][k];
 				mat[i][j] -= mat[k][j]*mat[i][k];
@@ -84,13 +51,12 @@ int forwardElimn(double mat[N][N+1])
       mat[k][k] = 1;
 		} 
 
-		//print(mat);	 //for matrix state 
+		//printFull(mat);	 //for matrix state 
 	} 
-	//print(mat);		 //for matrix state 
+	printFull(mat);		 //for matrix state 
 	return -1; 
 } 
 
-// function to calculate the values of the unknowns 
 void backSubs(double mat[N][N+1]) 
 { 
 	double x[N]; // An array to store solution 
@@ -119,6 +85,7 @@ void backSubs(double mat[N][N+1])
 	} 
 
 	printf("\nSolution for the system:\n"); 
-	for (i=0; i<N; i++) 
-		printf("%lf\n", x[i]); 
+ printSingle(x);
+	 
 }
+

@@ -3,19 +3,30 @@
 
 void Buneman_serial(double mat[N][N], double B[N])
 {
-    double Lower[N][N]= {0}, Upper[N][N];
+    double Lower[N][N]= {0}, Upper[N][N]={0};
     double X[N]= {0},Y[N]= {0};
     int i,j,k;
     
-    for(j=0; j<N; j++)
+    printf("[mat]: \n");
+    for(i=0; i<N; i++)
     {
-        for(i=0; i<N; i++)
+        for(j=0; j<N; j++)
+            printf("%9.3f",mat[i][j]);
+        printf("\n");
+    }
+    
+    for(i=0; i<N; i++)
+    {
+        for(j=0; j<N; j++)
         {
             if(i<=j)
             {
+                //printf("Upper:i[%d]j[%d]",i,j);
                 Upper[i][j]=mat[i][j];
-                for(k=0; k<i-1; k++)
+                for(k=0; k<=i-1; k++) {
+                  //printf(",%d",k);
                     Upper[i][j]-=Lower[i][k]*Upper[k][j];
+                }
                 if(i==j)
                     Lower[i][j]=1;
                 else
@@ -23,28 +34,31 @@ void Buneman_serial(double mat[N][N], double B[N])
             }
             else
             {
+                //printf("Lower:i[%d]j[%d]",i,j);
                 Lower[i][j]=mat[i][j];
-                for(k=0; k<=j-1; k++)
+                for(k=0; k<=j-1; k++) {
+                   // printf(",%d",k);
                     Lower[i][j]-=Lower[i][k]*Upper[k][j];
+                }
                 Lower[i][j]/=Upper[j][j];
                 Upper[i][j]=0;
             }
+            
         }
+        #if 0
+        printf("[U]: \n");
+        printMat(Upper);
+        printf("\n [L]: \n");
+        printMat(Lower);
+        #endif
+        
     }
     printf("[L]: \n");
-    for(i=0; i<N; i++)
-    {
-        for(j=0; j<N; j++)
-            printf("%9.3f",Lower[i][j]);
-        printf("\n");
-    }
+    printMat(Lower);
+    
     printf("\n\n[U]: \n");
-    for(i=0; i<N; i++)
-    {
-        for(j=0; j<N; j++)
-            printf("%9.3f",Upper[i][j]);
-        printf("\n");
-    }
+    printMat(Upper);
+    
     for(i=0; i<N; i++)
     {
         Y[i]=B[i];
@@ -54,10 +68,8 @@ void Buneman_serial(double mat[N][N], double B[N])
         }
     }
     printf("\n\n[Y]: \n");
-    for(i=0; i<N; i++)
-    {
-        printf("%9.3f",Y[i]);
-    }
+    printSingle(Y);
+
     for(i=N-1; i>=0; i--)
     {
         X[i]= Y[i];
@@ -67,10 +79,8 @@ void Buneman_serial(double mat[N][N], double B[N])
         }
         X[i]/=Upper[i][i];
     }
+    
     printf("\n\n[X]: \n");
-    for(i=0; i<N; i++)
-    {
-        printf("%9.3f",X[i]);
-    }
-     printf("\n\n");
+    printSingle(X);
+     printf("\n");
 }
