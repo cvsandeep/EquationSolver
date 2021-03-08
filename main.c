@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "algo_ref.h"
-
+#define   MAX_NUMP    32
 #if (N==8)
 double mat[N][N+1] = {{86.3, 41.8, -80.8, -94.3, -10.3, 73.0, 19.0, -89.6, 50.2}, 
                       {71.8, -16.2, 89.9, -91.3, -70.4, -30.2, 26.7, 83.8, 45.3}, 
@@ -50,9 +50,27 @@ struct timespec   StartTime;
 struct timespec   EndTime;  
 
  int startTime, endTime;
- 
-int main(void) 
+ int   NumProcs;
+int main(int argc, char** argv) 
 { 
+if(argc < 3) 
+{
+    fprintf(stderr, "Syntax: %s <max> <numProcesors>\nExiting Program...\n", argv[0]);
+    exit(1);
+  }
+
+Max = (unsigned long long int)atol(argv[1]);
+  NumProcs = atoi(argv[2]);
+
+  if (NumProcs < 1 || NumProcs > MAX_NUMP) {
+    fprintf(stderr,"Number of processors has to be between 1 and %d\nExiting Program...\n",MAX_NUMP);
+    exit(1);
+  }
+
+  if (Max < 1 || Max > 5000000000) {
+    fprintf(stderr,"Max has to be between 1 and 5000000000\nExiting Program...\n");
+    exit(1);
+  }	
 // Intialize Array size
 //--------------------------
 int i;
@@ -62,6 +80,7 @@ for (i=0;i<N;i++)
  B[i] =rand() % 100;
 //printf("  %d",B[i]);
 }
+	
 //---------------------------	
 // Timer
 	/*Starting the clock*/
