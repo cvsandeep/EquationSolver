@@ -14,23 +14,34 @@ pthread_barrier_t barrier;
 pthread_mutex_t lock;
 
 int cut;
+int Count;
+int Remainder;
 double Lower[N][N]= {0}, Upper[N][N]={0};
 double X[N]= {0},Y[N]= {0};
 
 
 static void *inner_loop(void *arg){
-  int i, norm, k;
+  int i, norm, k, rows,offset;
+  int end;
 
   int id = *((int *)arg);
   int start = id * cut;
-  int end = minimum(start + cut, N);
-  printf("\n Thread:%d, start:%d , end:%d\n", id, start, end);
+   if (id <= Remainder)
+     start += id;
+   else
+     start += Remainder;
+   rows = (id < Remainder ) ? cut +1 : cut ;
+   end=start+rows-1;
+   if ((offset+rows)==N) 
+     end--;
+    
+  printf("\n Thread:%d, start:%d , end:%d rows:%d\n", id, start, end, rows);
   for (norm = 0; norm < N; norm++){
-    printf( "\nThread %d, Normalizing %d column:" , id, norm);
+    //printf( "\nThread %d, Normalizing %d column:" , id, norm);
     pthread_barrier_wait(&barrier);
     int goof = maximum(norm , start);
-    for (i = goof; i < end; i++){
-        printf("\nLower:%d:[%d][%d] ",id, i,norm);
+    for (i = goof; i <= end; i++){
+        //printf("\nLower:%d:[%d][%d] ",id, i,norm);
         if(norm ==0)
           Lower[i][norm] = A[i][norm] / A[norm][norm];
         else
@@ -39,19 +50,19 @@ static void *inner_loop(void *arg){
     
     pthread_barrier_wait(&barrier);
     
-    for (i = goof; i < end; i++) {
-      printf("\nUpper:%d:", id);
+    for (i = goof; i <= end; i++) {
+      //printf("\nUpper:%d:", id);
       for (k = norm; k < N; k++){
         if(norm ==0 && i == 0) {
-          printf("************once********\n");
+          //printf("************once********\n");
           Upper[i][k]= A[i][k];
           Upper[0][0]= A[0][0];
         }
         else if(i!=0 && norm ==0) {
-          printf("o[%d][%d] ",i,k);  
+          //printf("o[%d][%d] ",i,k);  
           Upper[i][k]= A[i][k] - Lower[i][norm]*A[norm][k];
         } else if(i!=norm) {
-          printf("[%d][%d] ",i,k);  
+          //printf("[%d][%d] ",i,k);  
           Upper[i][k]= Upper[i][k] - Lower[i][norm]*Upper[norm][k];
         }
       }
@@ -69,7 +80,8 @@ static void *inner_loop_back(void *arg){
 
   int id = *((int *)arg);
   int start = id * cut;
-  int end = minimum(start + cut, N);
+  int end = start + cut;
+ 
   printf("\n Thread:%d, start:%d , end:%d\n", id, start, end);
   for (k = 0; k < N; k++){
     int goof = maximum(k + 1, start);
@@ -98,7 +110,9 @@ void buneman_parllel(int num_threads){
   int arg[num_threads];
   int i,j;
   cut = N / num_threads;
-  printf("N=%d , cut=%d\n", N, cut);
+  Remainder = (N) % num_threads;
+  
+  printf("N=%d , cut=%d Remainder=%d\n", N, cut, Remainder );
   for (i = 0; i < num_threads; i++) {
     arg[i] = i;
     

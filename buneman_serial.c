@@ -67,7 +67,7 @@ void Buneman_serial(double mat[N][N], double B[N])
             Y[i]-=Lower[i][j]*Y[j];
         }
     }
-    printf("\n\n[Y]: \n");
+    printf("\n[Y]: \n");
     printSingle(Y);
 
     for(i=N-1; i>=0; i--)
@@ -80,7 +80,6 @@ void Buneman_serial(double mat[N][N], double B[N])
         X[i]/=Upper[i][i];
     }
     
-    printf("\n\n[X]: \n");
+    printf("\n[X]: \n");
     printSingle(X);
-     printf("\n");
 }

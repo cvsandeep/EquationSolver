@@ -75,24 +75,28 @@ int main(int argc, char** argv)
     exit(1);
   }
 
+printf("\n ****************gaussian_serial****************\n");
 InitMatrix();
 ret = clock_gettime(CLOCK_REALTIME, &StartTime); assert(ret == 0);
 gaussian_serial(mat);
 ret = clock_gettime(CLOCK_REALTIME, &EndTime); assert(ret == 0);
 gaussian_serial_time = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
 
+printf("\n ****************gaussian_parllel****************\n");
 InitMatrix();
 ret = clock_gettime(CLOCK_REALTIME, &StartTime); assert(ret == 0);
 gaussian_parllel(NumProcs);
 ret = clock_gettime(CLOCK_REALTIME, &EndTime); assert(ret == 0);
 gaussian_parllel_time = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
 
+printf("\n ****************Buneman_serial****************\n");
 InitMatrix();
 ret = clock_gettime(CLOCK_REALTIME, &StartTime); assert(ret == 0);
 Buneman_serial(A, B);
 ret = clock_gettime(CLOCK_REALTIME, &EndTime); assert(ret == 0);
 Buneman_serial_time = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
 
+printf("\n ****************buneman_parllel****************\n");
 InitMatrix();
 ret = clock_gettime(CLOCK_REALTIME, &StartTime); assert(ret == 0);
 buneman_parllel(NumProcs);
@@ -109,6 +113,7 @@ return 0;
 
 void InitMatrix(void) {
   // Intialize All Matrix  
+#if (N>8)
   int i,j;
   
   for (i=0;i<N;i++)
@@ -122,6 +127,7 @@ void InitMatrix(void) {
   for (i=0;i<N;i++)
       for (j=0;j<N;j++)
       A[i][j] =rand() % 100;
+#endif
 }
 
 void printFull(double mat[N][N+1]) 
@@ -136,7 +142,8 @@ void printFull(double mat[N][N+1])
 void printSingle(double x[N]) {
 int i;
 for (i=0; i<N; i++) 
-		printf("%lf\n", x[i]);
+		printf("%lf\t", x[i]);
+   printf("\n"); 
 }
 
 // function to print matrix content at any stage 
