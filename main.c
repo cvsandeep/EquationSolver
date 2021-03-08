@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <conio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <assert.h>
 #include "algo_ref.h"
 #define   MAX_NUMP    32
 #if (N==8)
@@ -46,105 +46,83 @@ double mat[N][N+1];
   double X[N]; 
 
 /* Global Definitions*/
-struct timespec   StartTime;
-struct timespec   EndTime;  
+ 
 
  int startTime, endTime;
- int   NumProcs;
+ 
+ void InitMatrix(void);
+ 
 int main(int argc, char** argv) 
 { 
-if(argc < 3) 
-{
-    fprintf(stderr, "Syntax: %s <max> <numProcesors>\nExiting Program...\n", argv[0]);
+  unsigned long long int gaussian_serial_time,gaussian_parllel_time, Buneman_serial_time,buneman_parllel_time,runtime;
+  struct timespec   StartTime;
+  struct timespec   EndTime; 
+  int   NumProcs;
+  int ret;
+  
+  srand(time(NULL));
+  
+  if(argc < 2) 
+  {
+    fprintf(stderr, "Syntax: %s <numProcesors>\nExiting Program...\n", argv[0]);
     exit(1);
   }
 
-Max = (unsigned long long int)atol(argv[1]);
-  NumProcs = atoi(argv[2]);
+  NumProcs = atoi(argv[1]);
 
   if (NumProcs < 1 || NumProcs > MAX_NUMP) {
     fprintf(stderr,"Number of processors has to be between 1 and %d\nExiting Program...\n",MAX_NUMP);
     exit(1);
   }
 
-  if (Max < 1 || Max > 5000000000) {
-    fprintf(stderr,"Max has to be between 1 and 5000000000\nExiting Program...\n");
-    exit(1);
-  }	
-// Intialize Array size
-//--------------------------
-int i;
-srand(time(NULL));
-for (i=0;i<N;i++)
-{
- B[i] =rand() % 100;
-//printf("  %d",B[i]);
-}
-int k,j;
-srand(time(NULL));
-for (k=0;k<N;k++)
-    for (j=0;j<N;j++)
-    {
-    mat[k][j] =rand() % 100;
-    printf("  %d",mat[k][j]);
-    }
-	int m,n;
-srand(time(NULL));
-for (m=0;m<N;m++)
-    for (n=0;n<N;n++)
-    {
-    A[m][n] =rand() % 100;
-    printf("  %d",A[m][n]);
-    }
-	
-//---------------------------	
-// Timer
-	/*Starting the clock*/
-	int ret;
-ret = clock_gettime(CLOCK_REALTIME, &StartTime);
-assert(ret == 0);
-	gaussian_serial(mat);
- /*Ending Clock*/
-ret = clock_gettime(CLOCK_REALTIME, &EndTime);
- assert(ret == 0);
- unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
- printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
- 
- //Backward Substituion should be parllelized.
- // MPI solution
-	/*Starting the clock*/
-	ret = clock_gettime(CLOCK_REALTIME, &StartTime);
-assert(ret == 0);
-  gaussian_parllel(4);
- /*Ending Clock*/
- ret = clock_gettime(CLOCK_REALTIME, &EndTime);
- assert(ret == 0);
- unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
- printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
- 
-	/*Starting the clock*/
-	ret = clock_gettime(CLOCK_REALTIME, &StartTime);
-assert(ret == 0);
- Buneman_serial(A, B); // LU 
- /*Ending Clock*/
- ret = clock_gettime(CLOCK_REALTIME, &EndTime);
- assert(ret == 0);
- unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
- printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
- // Parllel Still not working - Sandeep
- //Backward Substituion should be parllelized
- // MPI solution 
-/*Starting the clock*/
-	ret = clock_gettime(CLOCK_REALTIME, &StartTime);
-assert(ret == 0);	
- buneman_parllel(4);
-/*Ending Clock*/
- ret = clock_gettime(CLOCK_REALTIME, &EndTime);
- assert(ret == 0);
- unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
- printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
-	return 0; 
+InitMatrix();
+ret = clock_gettime(CLOCK_REALTIME, &StartTime); assert(ret == 0);
+gaussian_serial(mat);
+ret = clock_gettime(CLOCK_REALTIME, &EndTime); assert(ret == 0);
+gaussian_serial_time = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
+
+InitMatrix();
+ret = clock_gettime(CLOCK_REALTIME, &StartTime); assert(ret == 0);
+gaussian_parllel(NumProcs);
+ret = clock_gettime(CLOCK_REALTIME, &EndTime); assert(ret == 0);
+gaussian_parllel_time = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
+
+InitMatrix();
+ret = clock_gettime(CLOCK_REALTIME, &StartTime); assert(ret == 0);
+Buneman_serial(A, B);
+ret = clock_gettime(CLOCK_REALTIME, &EndTime); assert(ret == 0);
+Buneman_serial_time = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
+
+InitMatrix();
+ret = clock_gettime(CLOCK_REALTIME, &StartTime); assert(ret == 0);
+buneman_parllel(NumProcs);
+ret = clock_gettime(CLOCK_REALTIME, &EndTime); assert(ret == 0);
+buneman_parllel_time = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
+
+printf("\ngaussian_serial_time=(%d.%09lld sec)\n", gaussian_serial_time / 1000000000, gaussian_serial_time % 1000000000);
+printf("\ngaussian_parllel_time=(%d.%09lld sec)\n", gaussian_parllel_time / 1000000000, gaussian_parllel_time % 1000000000);
+printf("\nBuneman_serial_time=(%d.%09lld sec)\n", Buneman_serial_time / 1000000000, Buneman_serial_time % 1000000000);
+printf("\nbuneman_parllel_time=(%d.%09lld sec)\n", buneman_parllel_time / 1000000000, buneman_parllel_time % 1000000000);
+
+return 0;
 } 
+
+void InitMatrix(void) {
+  // Intialize All Matrix  
+  int i,j;
+  
+  for (i=0;i<N;i++)
+   B[i] =rand() % 100;
+  
+  for (i=0;i<N;i++)
+      for (j=0;j<=N;j++)
+       mat[i][j] =rand() % 100;
+ 
+  
+  for (i=0;i<N;i++)
+      for (j=0;j<N;j++)
+      A[i][j] =rand() % 100;
+}
 
 void printFull(double mat[N][N+1]) 
 { 
