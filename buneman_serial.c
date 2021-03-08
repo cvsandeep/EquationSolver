@@ -1,19 +1,14 @@
 #include "matrix.h"
 #include "stdio.h"
 
+extern double Lower[N][N], Upper[N][N];
+extern double X[N],Y[N];
+
 void Buneman_serial(double mat[N][N], double B[N])
 {
-    double Lower[N][N]= {0}, Upper[N][N]={0};
-    double X[N]= {0},Y[N]= {0};
     int i,j,k;
     
-    printf("[mat]: \n");
-    for(i=0; i<N; i++)
-    {
-        for(j=0; j<N; j++)
-            printf("%9.3f",mat[i][j]);
-        printf("\n");
-    }
+    printMat(mat, "Initial Matrix");
     
     for(i=0; i<N; i++)
     {
@@ -46,18 +41,14 @@ void Buneman_serial(double mat[N][N], double B[N])
             
         }
         #if 0
-        printf("[U]: \n");
-        printMat(Upper);
-        printf("\n [L]: \n");
-        printMat(Lower);
+          printMat(Upper, "Upper");
+          printMat(Lower, "Lower");
         #endif
         
     }
-    printf("[L]: \n");
-    printMat(Lower);
     
-    printf("\n\n[U]: \n");
-    printMat(Upper);
+    printMat(Lower,"Lower");
+    printMat(Upper, "Upper");
     
     for(i=0; i<N; i++)
     {
@@ -67,8 +58,8 @@ void Buneman_serial(double mat[N][N], double B[N])
             Y[i]-=Lower[i][j]*Y[j];
         }
     }
-    printf("\n[Y]: \n");
-    printSingle(Y);
+    
+    printSingle(Y, "Y With Lower");
 
     for(i=N-1; i>=0; i--)
     {
@@ -80,6 +71,5 @@ void Buneman_serial(double mat[N][N], double B[N])
         X[i]/=Upper[i][i];
     }
     
-    printf("\n[X]: \n");
-    printSingle(X);
+    printSingle(X, "LU Solution");
 }

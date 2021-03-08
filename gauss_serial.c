@@ -51,9 +51,9 @@ int forwardElimn(double mat[N][N+1])
       mat[k][k] = 1;
 		} 
 
-		//printFull(mat);	 //for matrix state 
+		//printFull(mat,"Forwoard,iter");	 //for matrix state 
 	} 
-	printFull(mat);		 //for matrix state 
+	printFull(mat,"Forwoard");		 //for matrix state 
 	return -1; 
 } 
 
@@ -83,9 +83,8 @@ void backSubs(double mat[N][N+1])
 		unknown being calculated */
 		x[i] = x[i]/mat[i][i]; 
 	} 
-
-	printf("\nSolution for the system:\n"); 
- printSingle(x);
+ 
+ printSingle(x,"Gaussian Solution");
 	 
 }
 

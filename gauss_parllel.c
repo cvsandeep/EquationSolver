@@ -17,22 +17,24 @@ extern double X[N];
 int NumThreads;
  struct thread_param{
    int norm;
-   int i;
+   int id;
  };
 
  void *inner_loop(void * param){
      //int norm = *((int *) param);
      struct thread_param* tparam = (struct thread_param*) param;
      int norm = tparam->norm;
-     int i = tparam->i;
-     //printf("thread = %d\n", norm);
+     int id = tparam->id;
+     //printf("thread %d normalizing %d column \n", id, norm);
      float multiplier;
      int row, col;
-     for (row = norm + i + 1; row < N; row = row + NumThreads) {
+     for (row = norm + id + 1; row < N; row = row + NumThreads) {
+     //printf("   thread %d row= %d\n", id, row);
          multiplier = mat[row][norm] / mat[norm][norm];
          for (col = norm; col <= N; col++) {
              mat[row][col] -= mat[norm][col] * multiplier;
          }
+         //printSingle(mat[row]);
          //B[row] -= B[norm] * multiplier;
      }
      pthread_exit(0);
@@ -45,9 +47,8 @@ void gaussian_parllel(int num_threads) {
   NumThreads = num_threads;
   pthread_t thread[N];
   int i;
-
-  printf("Computing Serially.\n");
-
+  printFull(mat, "Initial Equation Matrix");
+  
   /* Gaussian elimination */
   for (norm = 0; norm < N - 1; norm++) {
       struct thread_param* param = malloc(num_threads * sizeof(struct thread_param));
@@ -60,7 +61,7 @@ void gaussian_parllel(int num_threads) {
 
       for(i = 0; i < num_threads; i++){
         param[i].norm = norm;
-        param[i].i = i;
+        param[i].id = i;
         pthread_create(&thread[i], NULL, inner_loop, (void*) &param[i]);
       }
 

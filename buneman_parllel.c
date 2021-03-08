@@ -16,8 +16,8 @@ pthread_mutex_t lock;
 int cut;
 int Count;
 int Remainder;
-double Lower[N][N]= {0}, Upper[N][N]={0};
-double X[N]= {0},Y[N]= {0};
+extern double Lower[N][N], Upper[N][N];
+extern double X[N],Y[N];
 
 
 static void *inner_loop(void *arg){
@@ -35,7 +35,7 @@ static void *inner_loop(void *arg){
    if ((offset+rows)==N) 
      end--;
     
-  printf("\n Thread:%d, start:%d , end:%d rows:%d\n", id, start, end, rows);
+  //printf("\n Thread:%d, start:%d , end:%d rows:%d\n", id, start, end, rows);
   for (norm = 0; norm < N; norm++){
     //printf( "\nThread %d, Normalizing %d column:" , id, norm);
     pthread_barrier_wait(&barrier);
@@ -75,32 +75,6 @@ static void *inner_loop(void *arg){
   return NULL;
 }
 
-static void *inner_loop_back(void *arg){
-  int i, j, k;
-
-  int id = *((int *)arg);
-  int start = id * cut;
-  int end = start + cut;
- 
-  printf("\n Thread:%d, start:%d , end:%d\n", id, start, end);
-  for (k = 0; k < N; k++){
-    int goof = maximum(k + 1, start);
-    for (i = goof; i < end; i++){
-      printf("\nFactor id:%d i[%d] k[%d]",id, i,k);
-      A[i][k] /= A[k][k];
-    }
-    pthread_barrier_wait(&barrier);
-    for(i = goof; i < end; i++){
-      for (j = k + 1; j < N; j++){
-        A[i][j] -= A[i][k] * A[k][j];
-      }
-    }
-    pthread_barrier_wait(&barrier);
-  }
-
-  return NULL;
-}
-
 void buneman_parllel(int num_threads){
 
   pthread_barrier_init(&barrier, NULL, num_threads);
@@ -112,7 +86,7 @@ void buneman_parllel(int num_threads){
   cut = N / num_threads;
   Remainder = (N) % num_threads;
   
-  printf("N=%d , cut=%d Remainder=%d\n", N, cut, Remainder );
+  //printf("N=%d , cut=%d Remainder=%d\n", N, cut, Remainder );
   for (i = 0; i < num_threads; i++) {
     arg[i] = i;
     
@@ -123,12 +97,10 @@ void buneman_parllel(int num_threads){
     pthread_join(thread[i], NULL);
   }
   
-  printf("[mat]: \n");
-  printMat(A);
-  printf("[U]: \n");
-  printMat(Upper);
-  printf("\n [L]: \n");
-  printMat(Lower);
+  
+  printMat(A, "Initial Matrix");
+  printMat(Upper,"Upper");
+  printMat(Lower,"Lower");
   
   for(i=0; i<N; i++)
     {
@@ -138,8 +110,8 @@ void buneman_parllel(int num_threads){
             Y[i]-=Lower[i][j]*Y[j];
         }
     }
-    printf("\n\n[Y]: \n");
-    printSingle(Y);
+    
+    printSingle(Y, "Y with Lower");
 
     for(i=N-1; i>=0; i--)
     {
@@ -151,7 +123,5 @@ void buneman_parllel(int num_threads){
         X[i]/=Upper[i][i];
     }
     
-    printf("\n\n[X]: \n");
-    printSingle(X);
-     printf("\n");
+    printSingle(X, "Solution with Buneman");
 }
