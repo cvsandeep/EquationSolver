@@ -80,6 +80,22 @@ for (i=0;i<N;i++)
  B[i] =rand() % 100;
 //printf("  %d",B[i]);
 }
+int k,j;
+srand(time(NULL));
+for (k=0;k<N;k++)
+    for (j=0;j<N;j++)
+    {
+    mat[k][j] =rand() % 100;
+    printf("  %d",mat[k][j]);
+    }
+	int m,n;
+srand(time(NULL));
+for (m=0;m<N;m++)
+    for (n=0;n<N;n++)
+    {
+    A[m][n] =rand() % 100;
+    printf("  %d",A[m][n]);
+    }
 	
 //---------------------------	
 // Timer
