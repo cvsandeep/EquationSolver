@@ -62,35 +62,52 @@ for (i=0;i<N;i++)
  B[i] =rand() % 100;
 //printf("  %d",B[i]);
 }
-getch();
 //---------------------------	
 // Timer
-//-----------------------------------------------
 	/*Starting the clock*/
 	int ret;
 ret = clock_gettime(CLOCK_REALTIME, &StartTime);
 assert(ret == 0);
 	gaussian_serial(mat);
  /*Ending Clock*/
-
+ret = clock_gettime(CLOCK_REALTIME, &EndTime);
+ assert(ret == 0);
+ unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
+ printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
+ 
+ //Backward Substituion should be parllelized.
+ // MPI solution
+	/*Starting the clock*/
+	ret = clock_gettime(CLOCK_REALTIME, &StartTime);
+assert(ret == 0);
+  gaussian_parllel(4);
+ /*Ending Clock*/
  ret = clock_gettime(CLOCK_REALTIME, &EndTime);
  assert(ret == 0);
  unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
  printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
-  return 0;
-//----------------------------------------------
- //Backward Substituion should be parllelized.
- // MPI solution
-  gaussian_parllel(4);
  
- 
+	/*Starting the clock*/
+	ret = clock_gettime(CLOCK_REALTIME, &StartTime);
+assert(ret == 0);
  Buneman_serial(A, B); // LU 
- 
+ /*Ending Clock*/
+ ret = clock_gettime(CLOCK_REALTIME, &EndTime);
+ assert(ret == 0);
+ unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
+ printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
  // Parllel Still not working - Sandeep
  //Backward Substituion should be parllelized
  // MPI solution 
+/*Starting the clock*/
+	ret = clock_gettime(CLOCK_REALTIME, &StartTime);
+assert(ret == 0);	
  buneman_parllel(4);
-
+/*Ending Clock*/
+ ret = clock_gettime(CLOCK_REALTIME, &EndTime);
+ assert(ret == 0);
+ unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
+ printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
 	return 0; 
 } 
 
