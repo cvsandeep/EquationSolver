@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "algo_ref.h"
 
 #if (N==8)
@@ -41,13 +44,41 @@ double mat[N][N+1];
 #endif
 
   double X[N]; 
+
+/* Global Definitions*/
+struct timespec   StartTime;
+struct timespec   EndTime;  
+
+ int startTime, endTime;
  
 int main(void) 
 { 
 // Intialize Array size
+//--------------------------
+int i;
+srand(time(NULL));
+for (i=0;i<N;i++)
+{
+ B[i] =rand() % 100;
+//printf("  %d",B[i]);
+}
+getch();
+//---------------------------	
 // Timer
+//-----------------------------------------------
+	/*Starting the clock*/
+	int ret;
+ret = clock_gettime(CLOCK_REALTIME, &StartTime);
+assert(ret == 0);
 	gaussian_serial(mat);
- 
+ /*Ending Clock*/
+
+ ret = clock_gettime(CLOCK_REALTIME, &EndTime);
+ assert(ret == 0);
+ unsigned long long int runtime = 1000000000 * (EndTime.tv_sec - StartTime.tv_sec) + EndTime.tv_nsec - StartTime.tv_nsec;
+ printf("\n(%d.%09lld sec)\n", runtime / 1000000000, runtime % 1000000000);
+  return 0;
+//----------------------------------------------
  //Backward Substituion should be parllelized.
  // MPI solution
   gaussian_parllel(4);
