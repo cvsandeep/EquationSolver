@@ -46,8 +46,6 @@
   double X[N]= {0},Y[N]= {0};
 #endif
 
-  double X[N]; 
-
 /* Global Definitions*/
  
 
@@ -119,8 +117,11 @@ void InitMatrix(void) {
 #if (N>8)
   int i,j;
   
-  for (i=0;i<N;i++)
-   B[i] =rand() % 100;
+  for (i=0;i<N;i++) {
+     B[i] =rand() % 100;
+     X[i] = 0;
+     Y[i] = 0;
+   }
   
   for (i=0;i<N;i++)
       for (j=0;j<=N;j++)

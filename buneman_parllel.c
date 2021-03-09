@@ -18,6 +18,45 @@ int Count;
 int Remainder;
 extern double Lower[N][N], Upper[N][N];
 extern double X[N],Y[N];
+int NumThreads;
+ struct thread_param{
+   int norm;
+   int id;
+ };
+
+static void *ForwardSub(void *param){
+    int i;
+    struct thread_param* tparam = (struct thread_param*) param;
+     int j = tparam->norm;
+     int id = tparam->id;
+     //printf("thread %d normalizing %d column \n", id, j);
+     for (i = j + id; i < N; i = i + NumThreads) {
+       if(j == 0)
+          Y[i]=B[i];
+       else {
+           //printf("-Lower[%d][%d]*y[%d]\n",i,j-1,j-1);
+           Y[i]-=Lower[i][j-1]*Y[j-1];
+       }
+     }
+  pthread_exit(0);
+}
+
+static void *BackwardSub(void *param){
+    int i;
+    struct thread_param* tparam = (struct thread_param*) param;
+     int j = tparam->norm;
+     int id = tparam->id;
+     //printf("\nthread %d normalizing %d column \n", id, j);
+     for (i = j - id; i >= 0; i = i - NumThreads) {
+       if(j == N-1) {
+          X[i]=Y[i];
+       } else {
+           //printf("-Upper[%d][%d]*X[%d]\n",i,j+1,j+1);
+           X[i]-=Upper[i][j+1]*X[j+1];
+       }
+     }
+  pthread_exit(0);
+}
 
 
 static void *inner_loop(void *arg){
@@ -82,7 +121,7 @@ void buneman_parllel(int num_threads){
   pthread_t thread[num_threads];
 
   int arg[num_threads];
-  int i,j;
+  int i,j,norm;
   cut = N / num_threads;
   Remainder = (N) % num_threads;
   
@@ -102,26 +141,64 @@ void buneman_parllel(int num_threads){
   printMat(Upper,"Upper");
   printMat(Lower,"Lower");
   
+  #if 0 
   for(i=0; i<N; i++)
     {
         Y[i]=B[i];
+        
         for(j=0; j<i; j++)
         {
+            printf("-Lower[%d][%d]*y[%d]",i,j,j);
             Y[i]-=Lower[i][j]*Y[j];
         }
     }
+#endif
     
+    
+    for (norm = 0; norm < N; norm++) {
+      struct thread_param* param = malloc(num_threads * sizeof(struct thread_param));
+      if ( param == NULL ) {
+          fprintf(stderr, "Couldn't allocate memory for thread.\n");
+          exit(EXIT_FAILURE);
+      }
+
+      for(i = 0; i < num_threads; i++){
+        param[i].norm = norm;
+        param[i].id = i;
+        pthread_create(&thread[i], NULL, ForwardSub, (void*) &param[i]);
+      }
+
+      for (j = 0; j < num_threads; j++) {
+          pthread_join(thread[j], NULL);
+      }
+
+      free(param);
+    }
     printSingle(Y, "Y with Lower");
 
-    for(i=N-1; i>=0; i--)
-    {
-        X[i]= Y[i];
-        for(j=i+1; j<N; j++)
-        {
-            X[i]-=Upper[i][j]*X[j];
-        }
-        X[i]/=Upper[i][i];
+    for (norm = N-1; norm >=0; norm--) {
+      struct thread_param* param = malloc(num_threads * sizeof(struct thread_param));
+      if ( param == NULL ) {
+          fprintf(stderr, "Couldn't allocate memory for thread.\n");
+          exit(EXIT_FAILURE);
+      }
+      
+
+      for(i = 0; i < num_threads; i++){
+        param[i].norm = norm;
+        param[i].id = i;
+        pthread_create(&thread[i], NULL, BackwardSub, (void*) &param[i]);
+      }
+
+      for (j = 0; j < num_threads; j++) {
+          pthread_join(thread[j], NULL);
+      }
+      
+      if(norm < N)
+        X[norm]/=Upper[norm][norm];
+      
+      free(param);
     }
-    
+      
     printSingle(X, "Solution with Buneman");
 }

@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "algo_ref.h"
 #include "stdio.h"
 
 extern double Lower[N][N], Upper[N][N];
