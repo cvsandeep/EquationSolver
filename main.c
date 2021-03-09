@@ -118,19 +118,19 @@ void InitMatrix(void) {
   int i,j;
   
   for (i=0;i<N;i++) {
-     B[i] =rand() % 100;
+     B[i] =1+rand() % 100;
      X[i] = 0;
      Y[i] = 0;
    }
   
   for (i=0;i<N;i++)
       for (j=0;j<=N;j++)
-       mat[i][j] =rand() % 100;
+       mat[i][j] =1+rand() % 100;
  
   
   for (i=0;i<N;i++)
       for (j=0;j<N;j++) {
-        A[i][j] =rand() % 100;
+        A[i][j] =1+rand() % 100;
         Lower[i][j] = 0.0;
         Upper[i][j] = 0.0;
       }
